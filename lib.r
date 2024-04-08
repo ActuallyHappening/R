@@ -1,5 +1,41 @@
+# install.packages("diagram")
+# mirror 5
+
+# all ( c(TRUE, TRUE) ) == TRUE
+# all ( c(TRUE, FALSE) ) == FALSE
+# all ( matrix(c(TRUE, TRUE, TRUE, TRUE), nrow=2, byrow=TRUE) ) == TRUE
+# nrow(M) == 69, ncol(M) = 420
+
+
+# rownames(M) = c("A", "B")
+# colnames(M) = rownames(M)
+# plotmat(M, pos = nrow(M))
+
+# π(0)P5 =(1,0,0,0,0)P5
+
+# rep(1,5) == c(1,1,1,1,1)
+# replicate(5, M, simplify = FALSE) is kind of list(M, M, M, M, M)
+
 pow = function(x, n) Reduce(`%*%`, replicate(n, x, simplify = FALSE))
 `%^%` = pow
+
+recursive_pow = function(A, n) {
+	if (n == 0) {
+		return(diag(nrow(A)))
+	}
+	if (n == 1) {
+		return(A)
+	}
+	return(A %*% recursive_pow(A, n-1))
+}
+
+loop_pow = function(A, n) {
+	result = diag(nrow(A))
+	for (i in 1:n) {
+		result = result %*% A
+	}
+	return(result)
+}
 
 #' prints all its arguments
 print_all = function(...) {
