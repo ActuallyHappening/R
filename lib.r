@@ -161,15 +161,34 @@ analyze_matrix = function(M) {
 }
 #endregion
 
-extrapolate_markov = function (M, i) {
-	print_all("Analyzing markov matrix", M, "with initial starting vector / state", i)
+extrapolate_markov = function (M, i, debug_mn=FALSE) {
+	print_all("Analyzing markov matrix with initial starting vector / state", i)
 
-	for (n in 2:10) {
-		exp = 2 ** n
-		Mn = M %^% exp
+	# for (n in 8:10) {
+	# 	exp = 2 ** n
+	# 	Mn = M %^% exp
+	# 	if (debug_mn) {
+	# 		print_all("M^", exp, "=", Mn)
+	# 	}
 
-		v = i %*% Mn
-		print_all("Extrapolating to power", exp, "gives Mn", Mn, "with final value v =", v)
+	# 	v = i %*% Mn
+	# 	print_all("Extrapolating to power", exp, "with final value v =", v)
+	# }
+	M512 = M %^% 512
+	v512 = round(i %*% M512, 5)
+	M513 = M512 %*% M
+	v513 = round(i %*% M513, 5)
+	M514 = M513 %*% M
+	v514 = round(i %*% M514, 5)
+	M515 = M514 %*% M
+	v515 = round(i %*% M515, 5)
+
+	if (all(v512 == v513) & all(v513 == v514)) {
+		print_all("Output converges to a specific value", v512)
+		return(v512)
+	} else {
+		print_all("Output does not converge to a specific value", "v512", v512, "v513", v513, "v514", v514)
+		return(FALSE)
 	}
 }
 
@@ -179,12 +198,27 @@ analyze_markov = function(M) {
 	print("Assuming is markov.")
 
 	n = nrow(M)
+
+	previous_stored = NULL
 	for (start_i in 1:n) {
 		# create starting vector with all 0s except for 1 at start_i
 		i = rep(0, n)
 		i[start_i] = 1
 
-		extrapolate_markov(M, i)
+		result = extrapolate_markov(M, i)
+		if (class(result) != "NULL") {
+			if (class(previous_stored) != "NULL") {
+				is_equal = all(previous_stored == result)
+				if (is_equal) {
+					print_all("Output is the same as the previous output (ignoring non-convergence)")
+				} else {
+					print_all("Output is different from previous stored value")
+				}
+			}
+
+			# overwrite
+			previous_stored = result
+		}
 	}
 }
 
