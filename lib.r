@@ -16,8 +16,19 @@ is_orthonormal <- function(A) {
 		# must be square matrix
 		return(FALSE)
 	}
-	if (all(A %*% t(A) == diag(n))) {
-		return(TRUE)
+	## A %*% t(A) == I
+	I = diag(n)
+	LHS = A %*% t(A)
+	if (all(LHS == I)) {
+		print_all("Satisfies first orthonormal condition")
+		if (abs(det(A)) == 1) {
+			print_all("Satisfies second orthonormal condition")
+			return(TRUE)
+		} else {
+			print_all("Conclusion: Not an orthonormal rotation matrix: det(A) != 1", "det(A)", det(A))
+		}
+	} else {
+		print_all("Conclusion: Not an orthonormal projection matrix: A %*% t(A) != I", "LHS", LHS, "I", I)
 	}
 	return(FALSE)
 }
@@ -73,7 +84,30 @@ is_markov = function(A) {
 				print_all("Conclusion: Matrix does not converge with a nice oscillation")
 			}
 		}
+
+		return(TRUE)
 	} else {
 		print("Conclusion: Matrix is not Markov (doesn't sum to 1)")
+	}
+	return(FALSE)
+}
+
+analyze_matrix = function(M) {
+	markov = is_markov(M)
+	orthonormal = is_orthonormal(M)
+	projection = is_perpendicular_projection(M)
+
+	if (markov) {
+		print("Summary: Matrix is Markov")
+	}
+	if (orthonormal) {
+		print("Summary: Matrix is orthonormal")
+	}
+	if (projection) {
+		print("Summary: Matrix is a perpendicular projection")
+	}
+
+	if (!markov & !orthonormal & !projection) {
+		print("Summary: Matrix is not Markov, orthonormal, or a perpendicular projection")
 	}
 }
