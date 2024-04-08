@@ -17,7 +17,7 @@
 # replicate(5, M, simplify = FALSE) is kind of list(M, M, M, M, M)
 
 pow = function(x, n) Reduce(`%*%`, replicate(n, x, simplify = FALSE))
-`%^%` = pow
+# `%^%` = pow
 
 recursive_pow = function(A, n) {
 	if (n == 0) {
@@ -30,16 +30,17 @@ recursive_pow = function(A, n) {
 }
 
 loop_pow = function(A, n) {
-	result = diag(nrow(A))
-	for (i in 1:n) {
-		result = result %*% A
-	}
-	return(result)
+  result = diag(nrow(A))
+  for (i in 1:n) {
+    result = result %*% A
+  }
+  return(result)
 }
+`%^%` <- loop_pow
 
 #' prints all its arguments
 print_all = function(...) {
-	for (i in 1:length(list(...))) {
+	for (i in seq_along(list(...))) {
 		print(list(...)[[i]])
 	}
 }
@@ -192,6 +193,8 @@ extrapolate_markov = function (M, i, debug_mn=FALSE) {
 	}
 }
 
+#' Analyze a markov matrix `M` by beginning with each unit state
+#' and extrapolating, seeing if any cases don't converge on a specific output value
 analyze_markov = function(M) {
 	print("Is markov?")
 	is_markov(M)
