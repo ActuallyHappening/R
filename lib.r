@@ -46,6 +46,7 @@ print_all = function(...) {
 
 ## Is orthonormal rotation matrix
 
+#region is_orthonormal
 is_orthonormal <- function(A) {
 	n <- nrow(A)
 	if (n != ncol(A)) {
@@ -68,9 +69,11 @@ is_orthonormal <- function(A) {
 	}
 	return(FALSE)
 }
+#endregion
 
 ## is perpendicular projection matrix
 
+#region is_perpendicular_projection
 is_perpendicular_projection <- function(A) {
 	n <- nrow(A)
 	if (n != ncol(A)) {
@@ -85,10 +88,12 @@ is_perpendicular_projection <- function(A) {
 	print_all("Conclusion: Matrix is not a perpendicular projection", "A2", A2, "A", A)
 	return(FALSE)
 }
+#endregion
 
 ## is markov transition matrix, showing that all elements are non-negative and row sum is 1
 ## and prints out convergence (or lack of convergence) for powers 128, 256, and 512, 513, and 514
 
+#region is_markov
 is_markov = function(A) {
 	n = nrow(A)
 	if (n != ncol(A)) {
@@ -130,7 +135,9 @@ is_markov = function(A) {
 	}
 	return(FALSE)
 }
+#endregion
 
+#region analyze_matrix
 analyze_matrix = function(M) {
 	print_all("Analyzing matrix", M)
 
@@ -152,3 +159,39 @@ analyze_matrix = function(M) {
 		print("Summary: Matrix is not Markov, orthonormal, or a perpendicular projection")
 	}
 }
+#endregion
+
+extrapolate_markov = function (M, i) {
+	print_all("Analyzing markov matrix", M, "with initial starting vector / state", i)
+
+	for (n in 2:10) {
+		exp = 2 ** n
+		Mn = M %^% exp
+
+		v = i %*% Mn
+		print_all("Extrapolating to power", exp, "gives Mn", Mn, "with final value v =", v)
+	}
+}
+
+analyze_markov = function(M) {
+	print("Is markov?")
+	is_markov(M)
+	print("Assuming is markov.")
+
+	n = nrow(M)
+	for (start_i in 1:n) {
+		# create starting vector with all 0s except for 1 at start_i
+		i = rep(0, n)
+		i[start_i] = 1
+
+		extrapolate_markov(M, i)
+	}
+}
+
+# initial<-matrix(c(1,0,0,0,0),ncol=5) #start in Bronze P<-matrix(c(0.6, 0.25, 0.1, 0.04, 0.01,
+# P<-matrix(c(0.6, 0.25, 0.1, 0.04, 0.01,
+#   0.4, 0.25, 0.3, 0.04, 0.01,
+#   0, 0.4, 0.4, 0.18, 0.02,
+#   0, 0, 0.4, 0.56, 0.04,
+#   0, 0, 0, 0.8, 0.2),
+# ncol=5,byrow=TRUE) #transition matrix
