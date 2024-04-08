@@ -200,26 +200,43 @@ analyze_markov = function(M) {
 	n = nrow(M)
 
 	previous_stored = NULL
+	previous_matches = 0
+	previous_not_defined = 0
+	previous_didnt_match = 0
+	didnt_converge = 0
+
 	for (start_i in 1:n) {
 		# create starting vector with all 0s except for 1 at start_i
 		i = rep(0, n)
 		i[start_i] = 1
 
 		result = extrapolate_markov(M, i)
+
+		# if result converges
 		if (!inherits(result, "NULL")) {
+			# if previous value exists
 			if (!inherits(previous_stored, "NULL")) {
 				is_equal = all(previous_stored == result)
 				if (is_equal == TRUE) {
 					print_all("Output is the same as the previous output (ignoring non-convergence)")
+					previous_matches = previous_matches + 1
 				} else {
 					print_all("Output is different from previous stored value")
+					previous_didnt_match = previous_didnt_match + 1
 				}
+			} else {
+				print("(Can't tell if previous value matched or not)")
+				previous_didnt_match = previous_didnt_match + 1
 			}
 
 			# overwrite
 			previous_stored = result
+		} else {
+			didnt_converge = didnt_converge + 1
 		}
 	}
+
+	print_all("Summary: previous_matches", previous_matches, "didnt_converge", didnt_converge, "previous_didnt_match (expecting 1)", previous_didnt_match)
 }
 
 # initial<-matrix(c(1,0,0,0,0),ncol=5) #start in Bronze P<-matrix(c(0.6, 0.25, 0.1, 0.04, 0.01,
