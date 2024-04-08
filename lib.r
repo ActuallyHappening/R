@@ -206,10 +206,10 @@ analyze_markov = function(M) {
 		i[start_i] = 1
 
 		result = extrapolate_markov(M, i)
-		if (class(result) != "NULL") {
-			if (class(previous_stored) != "NULL") {
+		if (!inherits(result, "NULL")) {
+			if (!inherits(previous_stored, "NULL")) {
 				is_equal = all(previous_stored == result)
-				if (is_equal) {
+				if (is_equal == TRUE) {
 					print_all("Output is the same as the previous output (ignoring non-convergence)")
 				} else {
 					print_all("Output is different from previous stored value")
