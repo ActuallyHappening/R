@@ -1,7 +1,7 @@
 pow = function(x, n) Reduce(`%*%`, replicate(n, x, simplify = FALSE))
 `%^%` = pow
 
-# prints all its arguments
+#' prints all its arguments
 print_all = function(...) {
 	for (i in 1:length(list(...))) {
 		print(list(...)[[i]])
@@ -18,17 +18,17 @@ is_orthonormal <- function(A) {
 	}
 	## A %*% t(A) == I
 	I = diag(n)
-	LHS = A %*% t(A)
+	LHS = round(A %*% t(A), 4)
 	if (all(LHS == I)) {
-		print_all("Satisfies first orthonormal condition")
+		print_all("Satisfies first orthonormal condition", "~LHS", LHS, "I", I)
 		if (abs(det(A)) == 1) {
-			print_all("Satisfies second orthonormal condition")
+			print_all("Satisfies second orthonormal condition", "det(A)", det(A))
 			return(TRUE)
 		} else {
 			print_all("Conclusion: Not an orthonormal rotation matrix: det(A) != 1", "det(A)", det(A))
 		}
 	} else {
-		print_all("Conclusion: Not an orthonormal projection matrix: A %*% t(A) != I", "LHS", LHS, "I", I)
+		print_all("Conclusion: Not an orthonormal projection matrix: A %*% t(A) != I", "~LHS", LHS, "I", I)
 	}
 	return(FALSE)
 }
@@ -41,9 +41,12 @@ is_perpendicular_projection <- function(A) {
 		# must be square matrix
 		return(FALSE)
 	}
-	if (all(A %*% A == A)) {
+	A2 = A %*% A
+	if (all(A2 == A)) {
+		print_all("Conclusion: Matrix is perpendicular projection")
 		return(TRUE)
 	}
+	print_all("Conclusion: Matrix is not a perpendicular projection", "A2", A2, "A", A)
 	return(FALSE)
 }
 
@@ -70,7 +73,7 @@ is_markov = function(A) {
 			print("Matrix converges to a specific matrix")
 			# check if rows have different values
 			if (all(A512[1,] == A512[2,])) {
-				print_all("Matrix converges to a matrix with rows 1=2")
+				print_all("Matrix converges to a matrix with rows 1=2, hence doesn't depend on starting state")
 			} else {
 				print_all("Matrix converges, but it depends what your starting state was")
 			}
@@ -93,6 +96,8 @@ is_markov = function(A) {
 }
 
 analyze_matrix = function(M) {
+	print_all("Analyzing matrix", M)
+
 	markov = is_markov(M)
 	orthonormal = is_orthonormal(M)
 	projection = is_perpendicular_projection(M)
